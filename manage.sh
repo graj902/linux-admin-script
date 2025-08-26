@@ -27,7 +27,34 @@ add_user() {
         fi
     fi
 }
-
+# Function to delete an existing user
+delete_user() {
+    echo "--- Delete User ---"
+    read -p "Enter the username to delete: " username
+    
+    # Check if the user exists before trying to delete
+    if id "$username" &>/dev/null; then
+        # Ask for confirmation before deleting
+        read -p "Are you sure you want to delete the user '$username' and their home directory? [y/N]: " confirm
+        
+        # Check the confirmation, default to No
+        if [[ "$confirm" == "y" || "$confirm" == "Y" ]]; then
+            # Delete the user and their home directory (-r flag)
+            userdel -r "$username"
+            
+            # Check if the user was deleted successfully
+            if [ $? -eq 0 ]; then
+                echo "User '$username' has been deleted successfully."
+            else
+                echo "Error: Failed to delete user '$username'."
+            fi
+        else
+            echo "User deletion cancelled."
+        fi
+    else
+        echo "Error: User '$username' does not exist."
+    fi
+}
 # --- Main Script Body ---
 # (Your 'while true' loop and menu are below this)
 # A simple script for user management and backups.
@@ -61,8 +88,8 @@ while true; do
             add_user
             ;;
         2)
-            echo "You chose to delete a user."
             # We will add the function call here later
+            delete_user
             ;;
         3)
             echo "You chose to modify a user."
