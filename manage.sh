@@ -1,5 +1,35 @@
 #!/bin/bash
+# --- Function Definitions ---
 
+# Function to add a new user
+add_user() {
+    echo "--- Add New User ---"
+    read -p "Enter the username to create: " username
+    
+    # Check if the user already exists
+    if id "$username" &>/dev/null; then
+        echo "Error: User '$username' already exists."
+    else
+        # Ask for a password for the new user
+        read -s -p "Enter password for $username: " password
+        echo
+        
+        # Create the user with the specified password
+        # -m creates the user's home directory
+        # -p uses openssl to create a compatible password hash
+        useradd -m -p "$(openssl passwd -1 "$password")" "$username"
+        
+        # Check if the user was created successfully
+        if [ $? -eq 0 ]; then
+            echo "User '$username' has been created successfully."
+        else
+            echo "Error: Failed to create user '$username'."
+        fi
+    fi
+}
+
+# --- Main Script Body ---
+# (Your 'while true' loop and menu are below this)
 # A simple script for user management and backups.
 
 # Infinite loop to display the menu until the user exits
@@ -26,8 +56,9 @@ while true; do
     # Use a case statement to act on the user's choice
     case $choice in
         1)
-            echo "You chose to add a user."
+            
             # We will add the function call here later
+            add_user
             ;;
         2)
             echo "You chose to delete a user."
